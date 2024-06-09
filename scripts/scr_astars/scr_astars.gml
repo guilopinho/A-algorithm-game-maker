@@ -74,7 +74,7 @@ function a_stars_find_path(_grid,_xstart,_ystart,_xend,_yend){
 			return _path;
 		}
 		
-		var _neighbors = [[0,1],[1,0],[0,-1],[-1,0],[1,1],[-1,-1]];
+		var _neighbors = [[0,1],[1,0],[0,-1],[-1,0]];
 		
 		for(var _i = 0; _i < array_length(_neighbors); _i++){
 			var _neighbor_x = _cur_node.x + _neighbors[_i,0];
@@ -90,28 +90,10 @@ function a_stars_find_path(_grid,_xstart,_ystart,_xend,_yend){
 			
 			var _neighbor_node = new Node(_neighbor_x,_neighbor_y,_new_g_cost,_new_h_cost,_cur_node);
 			
-			var _found_in_open = false;
-			for(var _j = 0; _j < array_length(_open_list); _j++){
-				if(_open_list[_j].x == _neighbor_node.x and _open_list[_j].y == _neighbor_node.y){
-					_found_in_open = true;
-					if(_new_f_cost < _open_list[_j].f_cost){
-						_open_list[_j] = _neighbor_node;
-					}
-					break;
-				}
-			}
+			if(a_stars_found_in_open(_new_f_cost, _neighbor_node, _open_list)) continue;
 			
-			if(_found_in_open) continue;
+			if(a_stars_found_in_closed(_neighbor_node, _closed_list)) continue;
 			
-			var _found_in_closed = false;
-			for(var _j = 0; _j < array_length(_closed_list); _j++){
-				if(_closed_list[_j].x == _neighbor_node.x and _closed_list[_j].y == _neighbor_node.y){
-					_found_in_closed = true;
-					break;
-				}
-			}
-			
-			if(_found_in_closed) continue;
 			array_push(_open_list,_neighbor_node);
 		}
 		
@@ -130,6 +112,31 @@ function a_stars_get_lower_f_cost(_open_list){
 		}
 	}
 	return _cur_index;
+}
+
+function a_stars_found_in_open(_new_f_cost, _neighbor_node, _open_list){
+	var _found_in_open = false;
+	for(var _j = 0; _j < array_length(_open_list); _j++){
+		if(_open_list[_j].x == _neighbor_node.x and _open_list[_j].y == _neighbor_node.y){
+			_found_in_open = true;
+			if(_new_f_cost < _open_list[_j].f_cost){
+				_open_list[_j] = _neighbor_node;
+			}
+			break;
+		}
+	}
+	return _found_in_open;
+}
+	
+function a_stars_found_in_closed(_neighbor_node, _closed_list){
+	var _found_in_closed = false;
+	for(var _i = 0; _i < array_length(_closed_list); _i++){
+		if(_closed_list[_i].x == _neighbor_node.x and _closed_list[_i].y == _neighbor_node.y){
+			_found_in_closed = true;
+			break;
+		}
+	}
+	return _found_in_closed;
 }
 
 function a_stars_follow_path(_grid,_xstart,_ystart,_xend,_yend,_path){
